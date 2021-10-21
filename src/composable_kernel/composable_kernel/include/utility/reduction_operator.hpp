@@ -247,7 +247,7 @@ struct unary_abs<half_t, hasDividing>
 
     __device__ inline half_t operator()(half_t a) const
     {
-#ifdef MIOPEN_BUILD_HIPRTC // FIXME WORKAROUND
+#ifdef DWORKAROUND_ISSUE_HIPRTC_HALF_CONVERSION
         const auto val = __habs(a);
         return *(reinterpret_cast<const half_t*>(&val)) * type_convert<half_t>{}(scaler);
 #else    
@@ -267,7 +267,7 @@ struct unary_abs<half_t, false>
 
     __device__ inline half_t operator()(half_t a) const
     {
-#ifdef MIOPEN_BUILD_HIPRTC // FIXME WORKAROUND
+#ifdef DWORKAROUND_ISSUE_HIPRTC_HALF_CONVERSION
         const auto val = __habs(a);
         return *reinterpret_cast<const half_t*>(&val);
 #else    
@@ -291,7 +291,7 @@ struct unary_sqrt<half_t>
 
     __device__ inline half_t operator()(half_t a) const
     {
-#ifdef MIOPEN_BUILD_HIPRTC // FIXME WORKAROUND
+#ifdef DWORKAROUND_ISSUE_HIPRTC_HALF_CONVERSION
 // .../reduction_operator.hpp:280:66: error: no matching conversion for static_cast from '__half' to 'ck::half_t' (aka '_Float16')
 //     __device__ inline half_t operator()(half_t a) const { return static_cast<half_t>(hsqrt(a)); };
 //                                                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
