@@ -27,6 +27,7 @@
 #include <iomanip>
 #include <iostream>
 #include <vector>
+#include <miopen/errors.hpp>
 
 InputFlags::InputFlags() { AddInputFlag("help", 'h', "", "Print Help Message", "string"); }
 
@@ -112,6 +113,8 @@ void InputFlags::Parse(int argc, char* argv[])
     for(int i = 0; i < args.size(); i++)
     {
         std::string temp = args[i];
+
+        std::cout << "Input Flag:::Parse::args[i] " << temp  << std::endl;
         if(temp[0] != '-')
         {
             printf("Illegal input flag\n");
@@ -125,8 +128,20 @@ void InputFlags::Parse(int argc, char* argv[])
 
             char short_name = FindShortName(long_name);
 
-            MapInputs[short_name].value = args[i + 1];
-            i++;
+            //check layout flag values
+            if ((args[i + 1]) == ("NCHW")||
+                (args[i + 1]) == ("NHWC")||
+                (args[i + 1]) == ("NCDHW")||
+                (args[i + 1]) == ("NDHWC"))
+            {
+                MapInputs[short_name].value = args[i + 1];
+                i++;
+            }
+            else
+            {
+                std::cout << "Invalid " << args[i] <<" Flag Type :: " << args[i+1] <<  std::endl;
+                MIOPEN_THROW("In/Out/Fill Layout Flags supports only  NCHW/NHWC/NCDHW/NDHWC values.");
+            }
         }
         else if(temp[0] == '-' && temp[1] == '?') // Help Input
             Print();
@@ -146,6 +161,8 @@ void InputFlags::Parse(int argc, char* argv[])
             else
             {
                 MapInputs[short_name].value = args[i + 1];
+
+                std::cout << "Input Flag:::else:value of short name " << MapInputs[short_name].value << std::endl;
                 i++;
             }
         }
