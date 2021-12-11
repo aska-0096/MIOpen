@@ -114,7 +114,7 @@ void InputFlags::Parse(int argc, char* argv[])
     {
         std::string temp = args[i];
 
-        std::cout << "Input Flag:::Parse::args[i] " << temp  << std::endl;
+        //std::cout << "Input Flag:::Parse::args[i] " << temp  << std::endl;
         if(temp[0] != '-')
         {
             printf("Illegal input flag\n");
@@ -127,20 +127,29 @@ void InputFlags::Parse(int argc, char* argv[])
                 Print();
 
             char short_name = FindShortName(long_name);
-
-            //check layout flag values
-            if ((args[i + 1]) == ("NCHW")||
-                (args[i + 1]) == ("NHWC")||
-                (args[i + 1]) == ("NCDHW")||
-                (args[i + 1]) == ("NDHWC"))
+            
+            //check for short name of in layout flags
+            if ( (short_name == 'I') || (short_name == 'O') || (short_name == 'f'))
             {
-                MapInputs[short_name].value = args[i + 1];
-                i++;
+              //check layout flag values
+              if ((args[i + 1]) == ("NCHW")||
+                  (args[i + 1]) == ("NHWC")||
+                  (args[i + 1]) == ("NCDHW")||
+                  (args[i + 1]) == ("NDHWC"))
+              {
+                  MapInputs[short_name].value = args[i + 1];
+                  i++;
+              }
+              else
+              {
+                std::cout << "Invalid " << args[i] <<" Flag Type :: " << args[i+1] <<  std::endl;
+                MIOPEN_THROW("In/Out/Fill Layout Flags supports only  NCHW/NHWC/NCDHW/NDHWC values.");
+              }
             }
             else
             {
-                std::cout << "Invalid " << args[i] <<" Flag Type :: " << args[i+1] <<  std::endl;
-                MIOPEN_THROW("In/Out/Fill Layout Flags supports only  NCHW/NHWC/NCDHW/NDHWC values.");
+                std::cout << "Input Flag:short name " << short_name << " Not Found !";
+                MIOPEN_THROW("In/Out/Fill Layout Flag Short name Invalid.");
             }
         }
         else if(temp[0] == '-' && temp[1] == '?') // Help Input
@@ -161,8 +170,6 @@ void InputFlags::Parse(int argc, char* argv[])
             else
             {
                 MapInputs[short_name].value = args[i + 1];
-
-                std::cout << "Input Flag:::else:value of short name " << MapInputs[short_name].value << std::endl;
                 i++;
             }
         }
